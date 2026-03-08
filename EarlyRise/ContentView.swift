@@ -1,22 +1,7 @@
 import SwiftUI
 
-// MARK: - Data Model
-struct DailyStats {
-    var tasksCompleted: Int = 0
-    var totalTasks: Int = 5
-    var scrollTimeEarned: Int = 0
-    var scrollTimeUsed: Int = 0
-    var currentStreak: Int = 5
-    var bestStreak: Int = 11
-    
-    var timeReclaimed: Int {
-        scrollTimeEarned - scrollTimeUsed
-    }
-}
-
-// MARK: - Home Dashboard View
 struct ContentView: View {
-    @State private var stats = DailyStats()
+    @State private var appState = AppState()
     @State private var showingTasks = false
     
     var body: some View {
@@ -42,8 +27,9 @@ struct ContentView: View {
             .background(Color(.systemGroupedBackground))
             .navigationBarHidden(true)
             .sheet(isPresented: $showingTasks) {
-                TaskListView()
-            }        }
+                TaskListView(appState: appState)
+            }
+        }
     }
     
     // MARK: - Header
@@ -59,11 +45,10 @@ struct ContentView: View {
                     .foregroundStyle(.secondary)
             }
             Spacer()
-            // Streak flame icon
             VStack {
                 Text("🔥")
                     .font(.system(size: 36))
-                Text("\(stats.currentStreak) days")
+                Text("\(appState.currentStreak) days")
                     .font(.caption)
                     .fontWeight(.semibold)
                     .foregroundStyle(.orange)
@@ -78,9 +63,9 @@ struct ContentView: View {
     // MARK: - Streak Card
     var streakCard: some View {
         HStack(spacing: 16) {
-            streakStat(value: stats.currentStreak, label: "Current Streak", color: .orange)
+            streakStat(value: appState.currentStreak, label: "Current Streak", color: .orange)
             Divider().frame(height: 40)
-            streakStat(value: stats.bestStreak, label: "Best Streak", color: .blue)
+            streakStat(value: appState.bestStreak, label: "Best Streak", color: .blue)
         }
         .padding()
         .background(.background)
@@ -106,25 +91,25 @@ struct ContentView: View {
         LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
             statCard(
                 icon: "checkmark.circle.fill",
-                value: "\(stats.tasksCompleted)/\(stats.totalTasks)",
+                value: "\(appState.tasksCompletedToday)/\(appState.totalTasks)",
                 label: "Tasks Completed",
                 color: .green
             )
             statCard(
                 icon: "clock.fill",
-                value: "\(stats.scrollTimeEarned) min",
+                value: "\(appState.scrollTimeEarned) min",
                 label: "Scroll Earned",
                 color: .blue
             )
             statCard(
                 icon: "hourglass",
-                value: "\(stats.scrollTimeUsed) min",
+                value: "\(appState.scrollTimeUsed) min",
                 label: "Scroll Used",
                 color: .purple
             )
             statCard(
                 icon: "arrow.up.heart.fill",
-                value: "\(stats.timeReclaimed) min",
+                value: "\(appState.timeReclaimed) min",
                 label: "Time Reclaimed",
                 color: .pink
             )
@@ -172,7 +157,6 @@ struct ContentView: View {
     }
 }
 
-// MARK: - Preview
 #Preview {
     ContentView()
 }
