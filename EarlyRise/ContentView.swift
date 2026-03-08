@@ -41,7 +41,9 @@ struct ContentView: View {
             }
             .background(Color(.systemGroupedBackground))
             .navigationBarHidden(true)
-        }
+            .sheet(isPresented: $showingTasks) {
+                TaskListView()
+            }        }
     }
     
     // MARK: - Header
