@@ -6,8 +6,13 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		C1EB41862F5D366300848999 /* TaskListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1EB41852F5D366300848999 /* TaskListView.swift */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		C1EB41752F5D2FCD00848999 /* EarlyRise.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = EarlyRise.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		C1EB41852F5D366300848999 /* TaskListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskListView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -32,6 +37,7 @@
 		C1EB416C2F5D2FCD00848999 = {
 			isa = PBXGroup;
 			children = (
+				C1EB41852F5D366300848999 /* TaskListView.swift */,
 				C1EB41772F5D2FCD00848999 /* EarlyRise */,
 				C1EB41762F5D2FCD00848999 /* Products */,
 			);
@@ -119,6 +125,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C1EB41862F5D366300848999 /* TaskListView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
