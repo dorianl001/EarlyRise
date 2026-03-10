@@ -16,11 +16,19 @@ struct ContentView: View {
                 .tag(0)
 
             // ── Stats Tab ────────────────────────────────────
+            // ── Stats Tab ────────────────────────────────────
             StatsView(appState: appState)
                 .tabItem {
                     Label("Stats", systemImage: "chart.bar.fill")
                 }
                 .tag(1)
+
+            // ── Settings Tab ─────────────────────────────────
+            SettingsView(appState: appState)
+                .tabItem {
+                    Label("Settings", systemImage: "gearshape.fill")
+                }
+                .tag(2)
         }
         .sheet(isPresented: $showingTasks) {
             TaskListView(appState: appState)
