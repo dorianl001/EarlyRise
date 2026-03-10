@@ -3,35 +3,47 @@ import SwiftUI
 struct ContentView: View {
     @State private var appState = AppState()
     @State private var showingTasks = false
-    
+    @State private var selectedTab = 0
+
     var body: some View {
+        TabView(selection: $selectedTab) {
+
+            // ── Home Tab ─────────────────────────────────────
+            homeTab
+                .tabItem {
+                    Label("Home", systemImage: "house.fill")
+                }
+                .tag(0)
+
+            // ── Stats Tab ────────────────────────────────────
+            StatsView(appState: appState)
+                .tabItem {
+                    Label("Stats", systemImage: "chart.bar.fill")
+                }
+                .tag(1)
+        }
+        .sheet(isPresented: $showingTasks) {
+            TaskListView(appState: appState)
+        }
+    }
+
+    // MARK: - Home Tab
+    var homeTab: some View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: 24) {
-                    
-                    // ── Header ──────────────────────────────────────
                     headerSection
-                    
-                    // ── Streak Card ─────────────────────────────────
                     streakCard
-                    
-                    // ── Stats Grid ──────────────────────────────────
                     statsGrid
-                    
-                    // ── Earn Scroll Button ──────────────────────────
                     earnButton
-                    
                 }
                 .padding()
             }
             .background(Color(.systemGroupedBackground))
             .navigationBarHidden(true)
-            .sheet(isPresented: $showingTasks) {
-                TaskListView(appState: appState)
-            }
         }
     }
-    
+
     // MARK: - Header
     var headerSection: some View {
         HStack {
@@ -59,7 +71,7 @@ struct ContentView: View {
         .clipShape(RoundedRectangle(cornerRadius: 16))
         .shadow(color: .black.opacity(0.05), radius: 8, y: 2)
     }
-    
+
     // MARK: - Streak Card
     var streakCard: some View {
         HStack(spacing: 16) {
@@ -72,7 +84,7 @@ struct ContentView: View {
         .clipShape(RoundedRectangle(cornerRadius: 16))
         .shadow(color: .black.opacity(0.05), radius: 8, y: 2)
     }
-    
+
     func streakStat(value: Int, label: String, color: Color) -> some View {
         VStack(spacing: 4) {
             Text("\(value)")
@@ -85,7 +97,7 @@ struct ContentView: View {
         }
         .frame(maxWidth: .infinity)
     }
-    
+
     // MARK: - Stats Grid
     var statsGrid: some View {
         LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
@@ -115,7 +127,7 @@ struct ContentView: View {
             )
         }
     }
-    
+
     func statCard(icon: String, value: String, label: String, color: Color) -> some View {
         VStack(spacing: 8) {
             Image(systemName: icon)
@@ -135,7 +147,7 @@ struct ContentView: View {
         .clipShape(RoundedRectangle(cornerRadius: 16))
         .shadow(color: .black.opacity(0.05), radius: 8, y: 2)
     }
-    
+
     // MARK: - Earn Button
     var earnButton: some View {
         Button {
