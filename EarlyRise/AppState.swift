@@ -1,10 +1,3 @@
-//
-//  AppState.swift
-//  EarlyRise
-//
-//  Created by Dorian Lopez on 3/8/26.
-//
-
 import SwiftUI
 
 @Observable
@@ -13,25 +6,90 @@ class AppState {
     var scrollTimeEarned: Int = 0
     var scrollTimeUsed: Int = 0
     var tasksCompletedToday: Int = 0
-    var currentStreak: Int = 5
-    var bestStreak: Int = 11
-    
+    var currentStreak: Int = 0
+    var bestStreak: Int = 0
+
+    private let calendar = Calendar.current
+
+    init() {
+        loadStreakData()
+        checkForMissedDay()
+    }
+
     var timeReclaimed: Int {
         scrollTimeEarned - scrollTimeUsed
     }
-    
+
     var totalTasks: Int {
         tasks.count
     }
-    
+
+    // MARK: - Complete Task
     func completeTask(_ task: EarnTask) {
         if let index = tasks.firstIndex(where: { $0.id == task.id }) {
             tasks[index].isCompleted = true
             scrollTimeEarned += task.minutesEarned
             tasksCompletedToday += 1
+            updateStreak()
         }
     }
-    
+
+    // MARK: - Streak Logic
+    private func updateStreak() {
+        let today = Date()
+        let lastCompletedDate = UserDefaults.standard.object(forKey: "lastCompletedDate") as? Date
+
+        if let lastDate = lastCompletedDate {
+            if calendar.isDateInToday(lastDate) {
+                // Already completed a task today, streak stays the same
+                return
+            } else if calendar.isDateInYesterday(lastDate) {
+                // Completed yesterday, increment streak
+                currentStreak += 1
+            } else {
+                // Missed a day, reset streak
+                currentStreak = 1
+            }
+        } else {
+            // First ever task completed
+            currentStreak = 1
+        }
+
+        // Update best streak
+        if currentStreak > bestStreak {
+            bestStreak = currentStreak
+        }
+
+        // Save data
+        UserDefaults.standard.set(today, forKey: "lastCompletedDate")
+        saveStreakData()
+    }
+
+    // MARK: - Check for Missed Day on App Launch
+    private func checkForMissedDay() {
+        guard let lastDate = UserDefaults.standard.object(forKey: "lastCompletedDate") as? Date else {
+            return
+        }
+
+        // If last completion was before yesterday, reset streak
+        if !calendar.isDateInToday(lastDate) && !calendar.isDateInYesterday(lastDate) {
+            currentStreak = 0
+            saveStreakData()
+        }
+    }
+
+    // MARK: - Persist Streak Data
+    private func saveStreakData() {
+        UserDefaults.standard.set(currentStreak, forKey: "currentStreak")
+        UserDefaults.standard.set(bestStreak, forKey: "bestStreak")
+    }
+
+    private func loadStreakData() {
+        currentStreak = UserDefaults.standard.integer(forKey: "currentStreak")
+        bestStreak = UserDefaults.standard.integer(forKey: "bestStreak")
+    }
+
+    // MARK: - Reset Daily Tasks
     func resetDailyTasks() {
         for index in tasks.indices {
             tasks[index].isCompleted = false
