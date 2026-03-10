@@ -13,6 +13,7 @@ struct SettingsView: View {
     @AppStorage("notificationsEnabled") var notificationsEnabled: Bool = true
     @AppStorage("streakReminderEnabled") var streakReminderEnabled: Bool = true
     @AppStorage("morningNudgeEnabled") var morningNudgeEnabled: Bool = false
+    @State private var screenTimeService = ScreenTimeService.shared
     @State private var showingResetAlert = false
 
     var body: some View {
@@ -111,7 +112,38 @@ struct SettingsView: View {
                     Label("Today's Summary", systemImage: "chart.bar")
                 }
 
-                // ── Reset ────────────────────────────────────
+                // ── Screen Time ──────────────────────────────────────────────────────
+                Section {
+                    if screenTimeService.isAuthorized {
+                        if screenTimeService.isMonitoring {
+                            Button(role: .destructive) {
+                                screenTimeService.stopMonitoring()
+                            } label: {
+                                Label("Stop Monitoring", systemImage: "pause.circle.fill")
+                            }
+                        } else {
+                            Button {
+                                screenTimeService.startMonitoring()
+                            } label: {
+                                Label("Start Monitoring", systemImage: "play.circle.fill")
+                            }
+                        }
+                    } else {
+                        Button {
+                            Task {
+                                await screenTimeService.requestAuthorization()
+                            }
+                        } label: {
+                            Label("Enable Screen Time", systemImage: "lock.shield.fill")
+                        }
+                    }
+                } header: {
+                    Label("Screen Time", systemImage: "hourglass")
+                } footer: {
+                    Text(screenTimeService.isAuthorized ? "EarlyRise will show a pause screen when you open social apps." : "Enable Screen Time access to activate the pause screen feature.")
+                }
+
+                // ── Reset ────────────────────────────────────────────────────────────
                 Section {
                     Button(role: .destructive) {
                         showingResetAlert = true
