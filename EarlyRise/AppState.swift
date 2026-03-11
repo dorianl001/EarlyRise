@@ -1,4 +1,5 @@
 import SwiftUI
+import ManagedSettings
 
 @Observable
 class AppState {
@@ -31,7 +32,20 @@ class AppState {
             scrollTimeEarned += task.minutesEarned
             tasksCompletedToday += 1
             updateStreak()
+            scheduleUnlock(minutes: task.minutesEarned)
         }
+    }
+
+    // MARK: - Schedule Unlock
+    func scheduleUnlock(minutes: Int) {
+        let unlockExpiry = Date().addingTimeInterval(TimeInterval(minutes * 60))
+        let sharedDefaults = UserDefaults(suiteName: "group.com.dorianlopez.earlyrise")
+        sharedDefaults?.set(unlockExpiry, forKey: "unlockExpiry")
+
+        // Remove shields immediately
+        let store = ManagedSettingsStore()
+        store.shield.applicationCategories = nil
+        store.shield.webDomainCategories = nil
     }
 
     // MARK: - Streak Logic
@@ -41,26 +55,20 @@ class AppState {
 
         if let lastDate = lastCompletedDate {
             if calendar.isDateInToday(lastDate) {
-                // Already completed a task today, streak stays the same
                 return
             } else if calendar.isDateInYesterday(lastDate) {
-                // Completed yesterday, increment streak
                 currentStreak += 1
             } else {
-                // Missed a day, reset streak
                 currentStreak = 1
             }
         } else {
-            // First ever task completed
             currentStreak = 1
         }
 
-        // Update best streak
         if currentStreak > bestStreak {
             bestStreak = currentStreak
         }
 
-        // Save data
         UserDefaults.standard.set(today, forKey: "lastCompletedDate")
         saveStreakData()
     }
@@ -70,8 +78,6 @@ class AppState {
         guard let lastDate = UserDefaults.standard.object(forKey: "lastCompletedDate") as? Date else {
             return
         }
-
-        // If last completion was before yesterday, reset streak
         if !calendar.isDateInToday(lastDate) && !calendar.isDateInYesterday(lastDate) {
             currentStreak = 0
             saveStreakData()
