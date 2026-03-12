@@ -28,12 +28,13 @@ class AppState {
 
     // MARK: - Complete Task
     func completeTask(_ task: EarnTask, context: ModelContext) {
+        print("🔥 completeTask fired")
         if let index = tasks.firstIndex(where: { $0.id == task.id }) {
             tasks[index].isCompleted = true
             scrollTimeEarned += task.minutesEarned
             tasksCompletedToday += 1
             updateStreak()
-            scheduleUnlock(minutes: task.minutesEarned)
+            scheduleUnlock(minutes: task.minutesEarned, taskName: task.name)
             
             // Save to SwiftData
             let completion = TaskCompletion(
@@ -46,7 +47,8 @@ class AppState {
     }
 
     // MARK: - Schedule Unlock
-    func scheduleUnlock(minutes: Int) {
+    func scheduleUnlock(minutes: Int, taskName: String) {
+        print("scheduleUnlock called — \(taskName), \(minutes) mins")
         let unlockExpiry = Date().addingTimeInterval(TimeInterval(minutes * 60))
         let sharedDefaults = UserDefaults(suiteName: "group.com.dorianlopez.earlyrise")
         sharedDefaults?.set(unlockExpiry, forKey: "unlockExpiry")
@@ -55,6 +57,14 @@ class AppState {
         let store = ManagedSettingsStore()
         store.shield.applicationCategories = nil
         store.shield.webDomainCategories = nil
+        
+        // Start Live Activity
+        Task { @MainActor in
+            LiveActivityManager.shared.startActivity(
+                taskName: taskName,
+                minutesEarned: minutes
+            )
+        }
     }
 
     // MARK: - Streak Logic

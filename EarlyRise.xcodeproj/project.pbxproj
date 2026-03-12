@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C1705AA62F625E97009733D0 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C1705AA52F625E97009733D0 /* WidgetKit.framework */; };
+		C1705AA82F625E97009733D0 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C1705AA72F625E97009733D0 /* SwiftUI.framework */; };
+		C1705AB52F625E98009733D0 /* EarlyRiseLiveActivityExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = C1705AA42F625E96009733D0 /* EarlyRiseLiveActivityExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		C1705ABF2F626CC9009733D0 /* ActivityKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C1705ABE2F626CC9009733D0 /* ActivityKit.framework */; };
 		C177B6042F6105790000D2F6 /* ManagedSettings.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C17DB6132F5FBCED0017A0C6 /* ManagedSettings.framework */; };
 		C177B60C2F6105790000D2F6 /* ShieldAction.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = C177B6032F6105790000D2F6 /* ShieldAction.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		C17DB6142F5FBCED0017A0C6 /* ManagedSettings.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C17DB6132F5FBCED0017A0C6 /* ManagedSettings.framework */; };
@@ -18,6 +22,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		C1705AB32F625E98009733D0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C1EB416D2F5D2FCD00848999 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = C1705AA32F625E96009733D0;
+			remoteInfo = EarlyRiseLiveActivityExtension;
+		};
 		C177B60A2F6105790000D2F6 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = C1EB416D2F5D2FCD00848999 /* Project object */;
@@ -50,6 +61,7 @@
 			files = (
 				C177B60C2F6105790000D2F6 /* ShieldAction.appex in Embed Foundation Extensions */,
 				C17DB6322F5FBD470017A0C6 /* DeviceActivityMonitor.appex in Embed Foundation Extensions */,
+				C1705AB52F625E98009733D0 /* EarlyRiseLiveActivityExtension.appex in Embed Foundation Extensions */,
 				C17DB61E2F5FBCED0017A0C6 /* ShieldConfiguration.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
@@ -58,6 +70,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		C1705AA42F625E96009733D0 /* EarlyRiseLiveActivityExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = EarlyRiseLiveActivityExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		C1705AA52F625E97009733D0 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
+		C1705AA72F625E97009733D0 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
+		C1705ABE2F626CC9009733D0 /* ActivityKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ActivityKit.framework; path = System/Library/Frameworks/ActivityKit.framework; sourceTree = SDKROOT; };
 		C177B6032F6105790000D2F6 /* ShieldAction.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ShieldAction.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		C17DB6112F5FBCED0017A0C6 /* ShieldConfiguration.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ShieldConfiguration.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		C17DB6132F5FBCED0017A0C6 /* ManagedSettings.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ManagedSettings.framework; path = System/Library/Frameworks/ManagedSettings.framework; sourceTree = SDKROOT; };
@@ -69,6 +85,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		C1705AB92F625E98009733D0 /* Exceptions for "EarlyRiseLiveActivity" folder in "EarlyRiseLiveActivityExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = C1705AA32F625E96009733D0 /* EarlyRiseLiveActivityExtension */;
+		};
 		C177B60F2F6105790000D2F6 /* Exceptions for "ShieldAction" folder in "ShieldAction" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -100,6 +123,14 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		C1705AA92F625E97009733D0 /* EarlyRiseLiveActivity */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				C1705AB92F625E98009733D0 /* Exceptions for "EarlyRiseLiveActivity" folder in "EarlyRiseLiveActivityExtension" target */,
+			);
+			path = EarlyRiseLiveActivity;
+			sourceTree = "<group>";
+		};
 		C177B6052F6105790000D2F6 /* ShieldAction */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
@@ -135,6 +166,16 @@
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		C1705AA12F625E96009733D0 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C1705ABF2F626CC9009733D0 /* ActivityKit.framework in Frameworks */,
+				C1705AA82F625E97009733D0 /* SwiftUI.framework in Frameworks */,
+				C1705AA62F625E97009733D0 /* WidgetKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		C177B6002F6105790000D2F6 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -173,9 +214,12 @@
 		C17DB6122F5FBCED0017A0C6 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				C1705ABE2F626CC9009733D0 /* ActivityKit.framework */,
 				C17DB6132F5FBCED0017A0C6 /* ManagedSettings.framework */,
 				C17DB6152F5FBCED0017A0C6 /* ManagedSettingsUI.framework */,
 				C17DB6292F5FBD470017A0C6 /* DeviceActivity.framework */,
+				C1705AA52F625E97009733D0 /* WidgetKit.framework */,
+				C1705AA72F625E97009733D0 /* SwiftUI.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -188,6 +232,7 @@
 				C17DB6172F5FBCED0017A0C6 /* ShieldConfiguration */,
 				C17DB62B2F5FBD470017A0C6 /* DeviceActivityMonitor */,
 				C177B6052F6105790000D2F6 /* ShieldAction */,
+				C1705AA92F625E97009733D0 /* EarlyRiseLiveActivity */,
 				C17DB6122F5FBCED0017A0C6 /* Frameworks */,
 				C1EB41762F5D2FCD00848999 /* Products */,
 			);
@@ -200,6 +245,7 @@
 				C17DB6112F5FBCED0017A0C6 /* ShieldConfiguration.appex */,
 				C17DB6282F5FBD470017A0C6 /* DeviceActivityMonitor.appex */,
 				C177B6032F6105790000D2F6 /* ShieldAction.appex */,
+				C1705AA42F625E96009733D0 /* EarlyRiseLiveActivityExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -207,6 +253,28 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		C1705AA32F625E96009733D0 /* EarlyRiseLiveActivityExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C1705AB62F625E98009733D0 /* Build configuration list for PBXNativeTarget "EarlyRiseLiveActivityExtension" */;
+			buildPhases = (
+				C1705AA02F625E96009733D0 /* Sources */,
+				C1705AA12F625E96009733D0 /* Frameworks */,
+				C1705AA22F625E96009733D0 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				C1705AA92F625E97009733D0 /* EarlyRiseLiveActivity */,
+			);
+			name = EarlyRiseLiveActivityExtension;
+			packageProductDependencies = (
+			);
+			productName = EarlyRiseLiveActivityExtension;
+			productReference = C1705AA42F625E96009733D0 /* EarlyRiseLiveActivityExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		C177B6022F6105790000D2F6 /* ShieldAction */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = C177B6102F6105790000D2F6 /* Build configuration list for PBXNativeTarget "ShieldAction" */;
@@ -288,6 +356,7 @@
 				C17DB61D2F5FBCED0017A0C6 /* PBXTargetDependency */,
 				C17DB6312F5FBD470017A0C6 /* PBXTargetDependency */,
 				C177B60B2F6105790000D2F6 /* PBXTargetDependency */,
+				C1705AB42F625E98009733D0 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				C1EB41772F5D2FCD00848999 /* EarlyRise */,
@@ -309,6 +378,9 @@
 				LastSwiftUpdateCheck = 2630;
 				LastUpgradeCheck = 2630;
 				TargetAttributes = {
+					C1705AA32F625E96009733D0 = {
+						CreatedOnToolsVersion = 26.3;
+					};
 					C177B6022F6105790000D2F6 = {
 						CreatedOnToolsVersion = 26.3;
 					};
@@ -341,11 +413,19 @@
 				C17DB6102F5FBCED0017A0C6 /* ShieldConfiguration */,
 				C17DB6272F5FBD470017A0C6 /* DeviceActivityMonitor */,
 				C177B6022F6105790000D2F6 /* ShieldAction */,
+				C1705AA32F625E96009733D0 /* EarlyRiseLiveActivityExtension */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		C1705AA22F625E96009733D0 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		C177B6012F6105790000D2F6 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -377,6 +457,13 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		C1705AA02F625E96009733D0 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		C177B5FF2F6105790000D2F6 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -409,6 +496,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		C1705AB42F625E98009733D0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = C1705AA32F625E96009733D0 /* EarlyRiseLiveActivityExtension */;
+			targetProxy = C1705AB32F625E98009733D0 /* PBXContainerItemProxy */;
+		};
 		C177B60B2F6105790000D2F6 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = C177B6022F6105790000D2F6 /* ShieldAction */;
@@ -427,6 +519,66 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		C1705AB72F625E98009733D0 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = TQ5893845H;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = EarlyRiseLiveActivity/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = EarlyRiseLiveActivity;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.dorianlopez.earlyrise.EarlyRiseLiveActivity;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		C1705AB82F625E98009733D0 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = TQ5893845H;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = EarlyRiseLiveActivity/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = EarlyRiseLiveActivity;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.dorianlopez.earlyrise.EarlyRiseLiveActivity;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 		C177B60D2F6105790000D2F6 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -795,6 +947,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		C1705AB62F625E98009733D0 /* Build configuration list for PBXNativeTarget "EarlyRiseLiveActivityExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C1705AB72F625E98009733D0 /* Debug */,
+				C1705AB82F625E98009733D0 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		C177B6102F6105790000D2F6 /* Build configuration list for PBXNativeTarget "ShieldAction" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

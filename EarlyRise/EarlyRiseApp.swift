@@ -17,6 +17,7 @@ struct EarlyRiseApp: App {
 
     var body: some Scene {
         WindowGroup {
+            let _ = print("🚀 EarlyRise app launched")
             if hasCompletedOnboarding {
                 ContentView()
             } else {

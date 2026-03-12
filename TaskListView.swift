@@ -34,6 +34,7 @@ struct TaskListView: View {
             .alert("Task Complete! 🎉", isPresented: $showingCompletionAlert) {
                 Button("Claim \(selectedTask?.minutesEarned ?? 0) Minutes") {
                     if let task = selectedTask {
+                        print("completeTask being called")
                         appState.completeTask(task, context: modelContext)
                     }
                 }
