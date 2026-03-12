@@ -1,5 +1,6 @@
 import SwiftUI
 import ManagedSettings
+import SwiftData
 
 @Observable
 class AppState {
@@ -26,13 +27,21 @@ class AppState {
     }
 
     // MARK: - Complete Task
-    func completeTask(_ task: EarnTask) {
+    func completeTask(_ task: EarnTask, context: ModelContext) {
         if let index = tasks.firstIndex(where: { $0.id == task.id }) {
             tasks[index].isCompleted = true
             scrollTimeEarned += task.minutesEarned
             tasksCompletedToday += 1
             updateStreak()
             scheduleUnlock(minutes: task.minutesEarned)
+            
+            // Save to SwiftData
+            let completion = TaskCompletion(
+                taskName: task.name,
+                minutesEarned: task.minutesEarned
+            )
+            context.insert(completion)
+            try? context.save()
         }
     }
 

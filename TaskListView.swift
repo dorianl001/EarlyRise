@@ -3,6 +3,7 @@ import SwiftUI
 struct TaskListView: View {
     @Environment(\.dismiss) var dismiss
     var appState: AppState
+    @Environment(\.modelContext) var modelContext
     @State private var showingCompletionAlert = false
     @State private var selectedTask: EarnTask?
 
@@ -33,7 +34,7 @@ struct TaskListView: View {
             .alert("Task Complete! 🎉", isPresented: $showingCompletionAlert) {
                 Button("Claim \(selectedTask?.minutesEarned ?? 0) Minutes") {
                     if let task = selectedTask {
-                        appState.completeTask(task)
+                        appState.completeTask(task, context: modelContext)
                     }
                 }
                 Button("Cancel", role: .cancel) {}

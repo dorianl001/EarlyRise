@@ -1,16 +1,28 @@
-//
-//  StatsView.swift
-//  EarlyRise
-//
-//  Created by Dorian Lopez on 3/9/26.
-//
-
 import SwiftUI
+import SwiftData
 
 struct StatsView: View {
     var appState: AppState
+    @Query private var allCompletions: [TaskCompletion]
     @State private var selectedTab = 0
     let tabs = ["Today", "Week", "Month", "Lifetime"]
+
+    // MARK: - Computed Stats
+    var todayCompletions: [TaskCompletion] { TaskCompletion.filterToday(allCompletions) }
+    var weekCompletions: [TaskCompletion] { TaskCompletion.filterThisWeek(allCompletions) }
+    var monthCompletions: [TaskCompletion] { TaskCompletion.filterThisMonth(allCompletions) }
+
+    var currentCompletions: [TaskCompletion] {
+        switch selectedTab {
+        case 0: return todayCompletions
+        case 1: return weekCompletions
+        case 2: return monthCompletions
+        default: return allCompletions
+        }
+    }
+
+    var currentMinutes: Int { TaskCompletion.totalMinutes(currentCompletions) }
+    var currentTaskCount: Int { currentCompletions.count }
 
     var body: some View {
         NavigationStack {
@@ -43,10 +55,10 @@ struct StatsView: View {
         VStack(spacing: 8) {
             Text("⏱️")
                 .font(.system(size: 56))
-            Text(formatTime(appState.scrollTimeEarned))
+            Text(formatTime(currentMinutes))
                 .font(.system(size: 48, weight: .bold, design: .rounded))
                 .foregroundStyle(.blue)
-            Text("reclaimed today")
+            Text("reclaimed \(tabLabel)")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
         }
@@ -55,6 +67,15 @@ struct StatsView: View {
         .background(.background)
         .clipShape(RoundedRectangle(cornerRadius: 24))
         .shadow(color: .black.opacity(0.05), radius: 8, y: 2)
+    }
+
+    var tabLabel: String {
+        switch selectedTab {
+        case 0: return "today"
+        case 1: return "this week"
+        case 2: return "this month"
+        default: return "lifetime"
+        }
     }
 
     // MARK: - Tab Selector
@@ -87,27 +108,27 @@ struct StatsView: View {
         LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
             statCard(
                 icon: "checkmark.circle.fill",
-                value: "\(appState.tasksCompletedToday)",
+                value: "\(currentTaskCount)",
                 label: "Tasks Done",
                 color: .green
             )
             statCard(
                 icon: "clock.fill",
-                value: "\(appState.scrollTimeEarned) min",
+                value: "\(currentMinutes) min",
                 label: "Scroll Earned",
                 color: .blue
             )
             statCard(
-                icon: "iphone.slash",
-                value: "\(appState.scrollTimeUsed) min",
-                label: "Scroll Used",
-                color: .purple
-            )
-            statCard(
                 icon: "heart.fill",
-                value: formatTime(appState.timeReclaimed),
+                value: formatTime(currentMinutes),
                 label: "Reclaimed",
                 color: .pink
+            )
+            statCard(
+                icon: "trophy.fill",
+                value: "\(appState.bestStreak) days",
+                label: "Best Streak",
+                color: .orange
             )
         }
     }
@@ -140,18 +161,9 @@ struct StatsView: View {
                     .font(.headline)
                 Spacer()
             }
-
             HStack(spacing: 16) {
-                streakCard(
-                    value: appState.currentStreak,
-                    label: "Current",
-                    icon: "🔥"
-                )
-                streakCard(
-                    value: appState.bestStreak,
-                    label: "Best",
-                    icon: "🏆"
-                )
+                streakCard(value: appState.currentStreak, label: "Current", icon: "🔥")
+                streakCard(value: appState.bestStreak, label: "Best", icon: "🏆")
             }
         }
     }
@@ -191,4 +203,5 @@ struct StatsView: View {
 
 #Preview {
     StatsView(appState: AppState())
+        .modelContainer(for: TaskCompletion.self, inMemory: true)
 }
