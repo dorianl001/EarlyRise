@@ -1,11 +1,9 @@
 import SwiftUI
-import ActivityKit
 
 struct ContentView: View {
     @State private var appState = AppState()
     @State private var showingTasks = false
     @State private var selectedTab = 0
-    @State private var showActivityAlert: String? = nil
 
     var body: some View {
         TabView(selection: $selectedTab) {
@@ -40,7 +38,6 @@ struct ContentView: View {
                     headerSection
                     streakCard
                     statsGrid
-                    testLiveActivityButton
                     earnButton
                 }
                 .padding()
@@ -152,37 +149,6 @@ struct ContentView: View {
         .background(.background)
         .clipShape(RoundedRectangle(cornerRadius: 16))
         .shadow(color: .black.opacity(0.05), radius: 8, y: 2)
-    }
-
-    // MARK: - Test Live Activity Button (Temporary)
-    var testLiveActivityButton: some View {
-        Button {
-            let enabled = ActivityAuthorizationInfo().areActivitiesEnabled
-            showActivityAlert = enabled ? "✅ Enabled - starting..." : "❌ Not enabled"
-            if enabled {
-                LiveActivityManager.shared.startActivity(
-                    taskName: "Test Task",
-                    minutesEarned: 10
-                )
-            }
-        } label: {
-            HStack {
-                Image(systemName: "bolt.fill")
-                    .font(.title3)
-                Text("Test Live Activity")
-                    .fontWeight(.semibold)
-            }
-            .frame(maxWidth: .infinity)
-            .padding()
-            .background(.orange)
-            .foregroundStyle(.white)
-            .clipShape(RoundedRectangle(cornerRadius: 16))
-        }
-        .alert("Live Activity Status", isPresented: .constant(showActivityAlert != nil)) {
-            Button("OK") { showActivityAlert = nil }
-        } message: {
-            Text(showActivityAlert ?? "")
-        }
     }
 
     // MARK: - Earn Button
