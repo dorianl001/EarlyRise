@@ -122,12 +122,22 @@ struct ContentView: View {
                 label: "Scroll Used",
                 color: .purple
             )
-            statCard(
-                icon: "arrow.up.heart.fill",
-                value: "\(appState.timeReclaimed) min",
-                label: "Time Reclaimed",
-                color: .pink
-            )
+            ZStack(alignment: .topTrailing) {
+                statCard(
+                    icon: "arrow.up.heart.fill",
+                    value: "\(appState.timeReclaimed) min",
+                    label: "Time Reclaimed",
+                    color: .pink
+                )
+                Button {
+                    shareTimeReclaimed()
+                } label: {
+                    Image(systemName: "square.and.arrow.up")
+                        .font(.caption)
+                        .foregroundStyle(.pink)
+                        .padding(8)
+                }
+            }
         }
     }
 
@@ -170,6 +180,34 @@ struct ContentView: View {
         }
         .shadow(color: .blue.opacity(0.3), radius: 8, y: 4)
     }
+    
+    // MARK: - Share
+        func shareTimeReclaimed() {
+            let hours = appState.timeReclaimed / 60
+            let minutes = appState.timeReclaimed % 60
+            
+            let timeString: String
+            if hours > 0 && minutes > 0 {
+                timeString = "\(hours)h \(minutes)m"
+            } else if hours > 0 {
+                timeString = "\(hours) hour\(hours == 1 ? "" : "s")"
+            } else {
+                timeString = "\(minutes) minute\(minutes == 1 ? "" : "s")"
+            }
+            
+            let message = "I just reclaimed \(timeString) of my time using EarlyRise — the app that makes you EARN your scroll time 🌅 #EarlyRise #EarnYourScroll"
+            
+            let activityVC = UIActivityViewController(
+                activityItems: [message],
+                applicationActivities: nil
+            )
+            
+            if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+               let window = windowScene.windows.first,
+               let rootVC = window.rootViewController {
+                rootVC.present(activityVC, animated: true)
+            }
+        }
 }
 
 #Preview {

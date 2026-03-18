@@ -9,8 +9,13 @@ class ScreenTimeService {
     
     static let shared = ScreenTimeService()
     
-    var isAuthorized = false
-    var isMonitoring = false
+    var isAuthorized: Bool = UserDefaults.standard.bool(forKey: "isAuthorized") {
+        didSet { UserDefaults.standard.set(isAuthorized, forKey: "isAuthorized") }
+    }
+
+    var isMonitoring: Bool = UserDefaults.standard.bool(forKey: "isMonitoring") {
+        didSet { UserDefaults.standard.set(isMonitoring, forKey: "isMonitoring") }
+    }
     
     private let center = AuthorizationCenter.shared
     private let deviceActivityCenter = DeviceActivityCenter()
@@ -24,6 +29,18 @@ class ScreenTimeService {
             print("Family Controls authorized!")
         } catch {
             print("Authorization failed: \(error)")
+            isAuthorized = false
+        }
+    }
+    
+    // MARK: - Check Authorization  ← ADD THIS RIGHT HERE
+    func checkAuthorization() {
+        switch center.authorizationStatus {
+        case .approved:
+            isAuthorized = true
+        case .notDetermined, .denied:
+            isAuthorized = false
+        @unknown default:
             isAuthorized = false
         }
     }

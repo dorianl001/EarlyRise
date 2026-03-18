@@ -4,6 +4,7 @@ import SwiftData
 @main
 struct EarlyRiseApp: App {
     @AppStorage("hasCompletedOnboarding") var hasCompletedOnboarding: Bool = false
+    @Environment(\.scenePhase) var scenePhase
 
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([TaskCompletion.self])
@@ -25,5 +26,10 @@ struct EarlyRiseApp: App {
             }
         }
         .modelContainer(sharedModelContainer)
+        .onChange(of: scenePhase) { _, newPhase in
+            if newPhase == .active {
+                ScreenTimeService.shared.checkAuthorization()
+            }
+        }
     }
 }

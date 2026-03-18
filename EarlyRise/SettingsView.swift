@@ -13,8 +13,12 @@ struct SettingsView: View {
     @AppStorage("notificationsEnabled") var notificationsEnabled: Bool = true
     @AppStorage("streakReminderEnabled") var streakReminderEnabled: Bool = true
     @AppStorage("morningNudgeEnabled") var morningNudgeEnabled: Bool = false
-    @State private var screenTimeService = ScreenTimeService.shared
+    private var screenTimeService = ScreenTimeService.shared
     @State private var showingResetAlert = false
+    
+    init(appState: AppState) {
+        self.appState = appState
+    }
 
     var body: some View {
         NavigationStack {
