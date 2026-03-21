@@ -75,7 +75,28 @@ struct SettingsView: View {
                         }
                         .tint(.orange)
 
-                        Toggle(isOn: $morningNudgeEnabled) {
+                        Toggle(isOn: Binding(
+                            get: { morningNudgeEnabled },
+                            set: { newValue in
+                                morningNudgeEnabled = newValue
+                                Task {
+                                    if newValue {
+                                        let granted = await NotificationManager.shared.requestPermission()
+                                        if granted {
+                                            NotificationManager.shared.scheduleMorningNudge(
+                                                streak: appState.currentStreak,
+                                                tasksCompleted: appState.tasksCompletedToday,
+                                                minutesReclaimed: appState.timeReclaimed
+                                            )
+                                        } else {
+                                            morningNudgeEnabled = false
+                                        }
+                                    } else {
+                                        NotificationManager.shared.cancelMorningNudge()
+                                    }
+                                }
+                            }
+                        )) {
                             VStack(alignment: .leading, spacing: 2) {
                                 Label("Morning Nudge", systemImage: "sunrise.fill")
                                 Text("Daily 8AM motivation with yesterday's stats")
