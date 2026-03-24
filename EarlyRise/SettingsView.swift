@@ -13,6 +13,7 @@ struct SettingsView: View {
     @AppStorage("notificationsEnabled") var notificationsEnabled: Bool = true
     @AppStorage("streakReminderEnabled") var streakReminderEnabled: Bool = true
     @AppStorage("morningNudgeEnabled") var morningNudgeEnabled: Bool = false
+    @AppStorage("morningNudgeTime") var morningNudgeTime: Double = 8 * 3600
     private var screenTimeService = ScreenTimeService.shared
     @State private var showingResetAlert = false
     
@@ -59,52 +60,57 @@ struct SettingsView: View {
 
                 // ── Notifications ────────────────────────────
                 Section {
-                    Toggle(isOn: $notificationsEnabled) {
-                        Label("Enable Notifications", systemImage: "bell.fill")
-                    }
-                    .tint(.blue)
-
-                    if notificationsEnabled {
-                        Toggle(isOn: $streakReminderEnabled) {
-                            VStack(alignment: .leading, spacing: 2) {
-                                Label("Streak Reminder", systemImage: "flame.fill")
-                                Text("Reminds you at 8PM if streak is at risk")
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-                            }
-                        }
-                        .tint(.orange)
-
-                        Toggle(isOn: Binding(
-                            get: { morningNudgeEnabled },
-                            set: { newValue in
-                                morningNudgeEnabled = newValue
-                                Task {
-                                    if newValue {
-                                        let granted = await NotificationManager.shared.requestPermission()
-                                        if granted {
-                                            NotificationManager.shared.scheduleMorningNudge(
-                                                streak: appState.currentStreak,
-                                                tasksCompleted: appState.tasksCompletedToday,
-                                                minutesReclaimed: appState.timeReclaimed
-                                            )
-                                        } else {
-                                            morningNudgeEnabled = false
-                                        }
+                    Toggle(isOn: Binding(
+                        get: { morningNudgeEnabled },
+                        set: { newValue in
+                            morningNudgeEnabled = newValue
+                            Task {
+                                if newValue {
+                                    let granted = await NotificationManager.shared.requestPermission()
+                                    if granted {
+                                        let time = Date(timeIntervalSince1970: morningNudgeTime)
+                                        NotificationManager.shared.scheduleMorningNudge(
+                                            streak: appState.currentStreak,
+                                            tasksCompleted: appState.tasksCompletedToday,
+                                            minutesReclaimed: appState.timeReclaimed,
+                                            time: time
+                                        )
                                     } else {
-                                        NotificationManager.shared.cancelMorningNudge()
+                                        morningNudgeEnabled = false
                                     }
+                                } else {
+                                    NotificationManager.shared.cancelMorningNudge()
                                 }
                             }
-                        )) {
-                            VStack(alignment: .leading, spacing: 2) {
-                                Label("Morning Nudge", systemImage: "sunrise.fill")
-                                Text("Daily 8AM motivation with yesterday's stats")
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-                            }
                         }
-                        .tint(.yellow)
+                    )) {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Label("Morning Nudge", systemImage: "sunrise.fill")
+                            Text("Daily motivation with yesterday's stats")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                    .tint(.yellow)
+
+                    if morningNudgeEnabled {
+                        DatePicker(
+                            "Nudge Time",
+                            selection: Binding(
+                                get: { Date(timeIntervalSince1970: morningNudgeTime) },
+                                set: { newTime in
+                                    morningNudgeTime = newTime.timeIntervalSince1970
+                                    let time = Date(timeIntervalSince1970: morningNudgeTime)
+                                    NotificationManager.shared.scheduleMorningNudge(
+                                        streak: appState.currentStreak,
+                                        tasksCompleted: appState.tasksCompletedToday,
+                                        minutesReclaimed: appState.timeReclaimed,
+                                        time: time
+                                    )
+                                }
+                            ),
+                            displayedComponents: .hourAndMinute
+                        )
                     }
                 } header: {
                     Label("Notifications", systemImage: "bell")

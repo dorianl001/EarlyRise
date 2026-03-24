@@ -20,19 +20,18 @@ class NotificationManager {
     }
     
     // MARK: - Schedule Morning Nudge
-    func scheduleMorningNudge(streak: Int, tasksCompleted: Int, minutesReclaimed: Int) {
+    func scheduleMorningNudge(streak: Int, tasksCompleted: Int, minutesReclaimed: Int, time: Date = Calendar.current.date(bySettingHour: 8, minute: 0, second: 0, of: Date()) ?? Date()) {
         let center = UNUserNotificationCenter.current()
         
         // Remove any existing morning nudge
         center.removePendingNotificationRequests(withIdentifiers: ["morningNudge"])
         
         // Build the message
-        let messages = [
-            "🌅 Rise and earn! Yesterday you reclaimed \(minutesReclaimed) min. Keep your \(streak)-day streak alive!",
-            "🌅 Good morning! You completed \(tasksCompleted) task\(tasksCompleted == 1 ? "" : "s") yesterday. Today's a new chance to earn your scroll.",
-            "🌅 Your \(streak)-day streak is waiting. Complete a task before you scroll today!",
-            "🌅 Yesterday: \(minutesReclaimed) min reclaimed, \(tasksCompleted) task\(tasksCompleted == 1 ? "" : "s") done. Today: let's beat it. 💪",
-        ]
+        let msg1 = "🌅 Rise and earn! Yesterday you reclaimed \(minutesReclaimed) min. Keep your \(streak)-day streak alive!"
+        let msg2 = "🌅 Good morning! You completed \(tasksCompleted) task\(tasksCompleted == 1 ? "" : "s") yesterday. Today's a new chance to earn your scroll."
+        let msg3 = "🌅 Your \(streak)-day streak is waiting. Complete a task before you scroll today!"
+        let msg4 = "🌅 Yesterday: \(minutesReclaimed) min reclaimed, \(tasksCompleted) task\(tasksCompleted == 1 ? "" : "s") done. Today: let's beat it. 💪"
+        let messages = [msg1, msg2, msg3, msg4]
         
         let message = messages[streak % messages.count]
         
@@ -42,10 +41,11 @@ class NotificationManager {
         content.body = message
         content.sound = .default
         
-        // Schedule for 8AM daily
+        // Schedule for user's chosen time daily
+        let calendar = Calendar.current
         var dateComponents = DateComponents()
-        dateComponents.hour = 8
-        dateComponents.minute = 0
+        dateComponents.hour = calendar.component(.hour, from: time)
+        dateComponents.minute = calendar.component(.minute, from: time)
         
         let trigger = UNCalendarNotificationTrigger(
             dateMatching: dateComponents,
@@ -62,7 +62,7 @@ class NotificationManager {
             if let error = error {
                 print("Failed to schedule morning nudge: \(error)")
             } else {
-                print("Morning nudge scheduled for 8AM daily!")
+                print("Morning nudge scheduled!")
             }
         }
     }
