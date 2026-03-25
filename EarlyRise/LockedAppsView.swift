@@ -1,0 +1,80 @@
+import SwiftUI
+import FamilyControls
+
+struct LockedAppsView: View {
+    @State private var appSelection = AppSelectionManager.shared
+    @State private var isPickerPresented = false
+
+    var body: some View {
+        NavigationStack {
+            List {
+                // MARK: - Current Selection Status
+                Section {
+                    if appSelection.hasSelectedApps {
+                        HStack {
+                            Image(systemName: "lock.shield.fill")
+                                .foregroundStyle(.blue)
+                            Text("Apps selected")
+                                .foregroundStyle(.primary)
+                            Spacer()
+                            Text("Tap 'Edit' to change")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                    } else {
+                        VStack(spacing: 12) {
+                            Image(systemName: "lock.open.fill")
+                                .font(.system(size: 40))
+                                .foregroundStyle(.secondary)
+                            Text("No apps selected")
+                                .font(.headline)
+                                .foregroundStyle(.secondary)
+                            Text("Tap 'Add Apps' to choose which apps EarlyRise will monitor.")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                                .multilineTextAlignment(.center)
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 20)
+                    }
+                } header: {
+                    Label("Monitored Apps", systemImage: "lock.shield.fill")
+                } footer: {
+                    Text("EarlyRise will show the pause screen when you open these apps after your scroll budget runs out.")
+                }
+
+                // MARK: - Add / Edit / Clear Buttons
+                Section {
+                    Button {
+                        isPickerPresented = true
+                    } label: {
+                        Label(
+                            appSelection.hasSelectedApps ? "Edit Apps" : "Add Apps",
+                            systemImage: appSelection.hasSelectedApps ? "pencil.circle.fill" : "plus.circle.fill"
+                        )
+                        .foregroundStyle(.blue)
+                    }
+
+                    if appSelection.hasSelectedApps {
+                        Button(role: .destructive) {
+                            appSelection.activitySelection = FamilyActivitySelection()
+                            appSelection.removeShields()
+                        } label: {
+                            Label("Remove All Apps", systemImage: "trash.fill")
+                        }
+                    }
+                }
+            }
+            .navigationTitle("Locked Apps")
+            .navigationBarTitleDisplayMode(.large)
+            .familyActivityPicker(
+                isPresented: $isPickerPresented,
+                selection: $appSelection.activitySelection
+            )
+        }
+    }
+}
+
+#Preview {
+    LockedAppsView()
+}

@@ -142,6 +142,19 @@ struct SettingsView: View {
                 } header: {
                     Label("Today's Summary", systemImage: "chart.bar")
                 }
+                
+                // ── Locked Apps ──────────────────────────────────────────────────────
+                Section {
+                    NavigationLink {
+                        LockedAppsView()
+                    } label: {
+                        Label("Locked Apps", systemImage: "lock.shield.fill")
+                    }
+                } header: {
+                    Label("App Management", systemImage: "apps.iphone")
+                } footer: {
+                    Text("Choose which apps EarlyRise monitors when your scroll budget runs out.")
+                }
 
                 // ── Screen Time ──────────────────────────────────────────────────────
                 Section {
