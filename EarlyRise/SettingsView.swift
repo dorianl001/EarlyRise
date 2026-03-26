@@ -24,7 +24,25 @@ struct SettingsView: View {
     var body: some View {
         NavigationStack {
             List {
-
+                // ── Premium ──────────────────────────────────────────────────────────
+                Section {
+                    NavigationLink {
+                        PaywallView()
+                    } label: {
+                        HStack {
+                            Label("Upgrade to Premium", systemImage: "star.fill")
+                                .foregroundStyle(.orange)
+                            Spacer()
+                            Text("$2.99/mo")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                } header: {
+                    Label("Premium", systemImage: "crown.fill")
+                } footer: {
+                    Text("Unlock all features for $2.99/month or save with $19.99/year.")
+                }
                 // ── Scroll Budget ────────────────────────────
                 Section {
                     VStack(alignment: .leading, spacing: 12) {
