@@ -1,10 +1,3 @@
-//
-//  PaywallView.swift
-//  EarlyRise
-//
-//  Created by Dorian Lopez on 3/25/26.
-//
-
 import SwiftUI
 import StoreKit
 
@@ -19,6 +12,9 @@ struct PaywallView: View {
         "com.dorianlopez.earlyrise.premium.monthly",
         "com.dorianlopez.earlyrise.premium.annual"
     ]
+
+    let privacyURL = URL(string: "https://www.notion.so/EarlyRise-Privacy-Policy-32278f7f3b85801dad83d3e6a202dd15")!
+    let termsURL = URL(string: "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/")!
 
     var body: some View {
         NavigationStack {
@@ -80,9 +76,12 @@ struct PaywallView: View {
                                             Text(product.displayName)
                                                 .font(.headline)
                                                 .foregroundStyle(.white)
-                                            Text(product.description)
+                                            Text(subscriptionLength(for: product))
                                                 .font(.caption)
-                                                .foregroundStyle(.white.opacity(0.8))
+                                                .foregroundStyle(.white.opacity(0.9))
+                                            Text(product.description)
+                                                .font(.caption2)
+                                                .foregroundStyle(.white.opacity(0.7))
                                         }
                                         Spacer()
                                         Text(product.displayPrice)
@@ -110,12 +109,26 @@ struct PaywallView: View {
                     }
 
                     // ── Legal ─────────────────────────────
-                    Text("Subscriptions auto-renew unless cancelled. Cancel anytime in Settings.")
-                        .font(.caption2)
-                        .foregroundStyle(.secondary)
-                        .multilineTextAlignment(.center)
-                        .padding(.horizontal)
-                        .padding(.bottom, 32)
+                    VStack(spacing: 8) {
+                        Text("Subscriptions auto-renew unless cancelled at least 24 hours before the end of the current period. Cancel anytime in your iPhone Settings.")
+                            .font(.caption2)
+                            .foregroundStyle(.secondary)
+                            .multilineTextAlignment(.center)
+
+                        HStack(spacing: 16) {
+                            Link("Privacy Policy", destination: privacyURL)
+                                .font(.caption2)
+                                .foregroundStyle(.blue)
+                            Text("·")
+                                .font(.caption2)
+                                .foregroundStyle(.secondary)
+                            Link("Terms of Use", destination: termsURL)
+                                .font(.caption2)
+                                .foregroundStyle(.blue)
+                        }
+                    }
+                    .padding(.horizontal)
+                    .padding(.bottom, 32)
                 }
             }
             .navigationTitle("Go Premium")
@@ -131,6 +144,15 @@ struct PaywallView: View {
             } message: {
                 Text(errorMessage ?? "Something went wrong.")
             }
+        }
+    }
+
+    // MARK: - Subscription Length
+    func subscriptionLength(for product: Product) -> String {
+        if product.id.contains("monthly") {
+            return "1 month · auto-renews at \(product.displayPrice)/month"
+        } else {
+            return "1 year · auto-renews at \(product.displayPrice)/year"
         }
     }
 
