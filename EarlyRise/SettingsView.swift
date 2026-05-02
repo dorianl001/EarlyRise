@@ -1,11 +1,5 @@
-//
-//  SettingsView.swift
-//  EarlyRise
-//
-//  Created by Dorian Lopez on 3/9/26.
-//
-
 import SwiftUI
+import StoreKit
 
 struct SettingsView: View {
     var appState: AppState
@@ -16,7 +10,8 @@ struct SettingsView: View {
     @AppStorage("morningNudgeTime") var morningNudgeTime: Double = 8 * 3600
     private var screenTimeService = ScreenTimeService.shared
     @State private var showingResetAlert = false
-    
+    @State private var showingPaywall = false
+
     init(appState: AppState) {
         self.appState = appState
     }
@@ -24,25 +19,29 @@ struct SettingsView: View {
     var body: some View {
         NavigationStack {
             List {
+
                 // ── Premium ──────────────────────────────────────────────────────────
-                Section {
-                    NavigationLink {
-                        PaywallView()
-                    } label: {
-                        HStack {
-                            Label("Upgrade to Premium", systemImage: "star.fill")
-                                .foregroundStyle(.orange)
-                            Spacer()
-                            Text("$2.99/mo")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
+                if !appState.isPremium {
+                    Section {
+                        NavigationLink {
+                            PaywallView(appState: appState)
+                        } label: {
+                            HStack {
+                                Label("Upgrade to Premium", systemImage: "star.fill")
+                                    .foregroundStyle(.orange)
+                                Spacer()
+                                Text("$2.99/mo")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
                         }
+                    } header: {
+                        Label("Premium", systemImage: "crown.fill")
+                    } footer: {
+                        Text("Unlock all features for $2.99/month or save with $19.99/year.")
                     }
-                } header: {
-                    Label("Premium", systemImage: "crown.fill")
-                } footer: {
-                    Text("Unlock all features for $2.99/month or save with $19.99/year.")
                 }
+
                 // ── Scroll Budget ────────────────────────────
                 Section {
                     VStack(alignment: .leading, spacing: 12) {
@@ -81,6 +80,10 @@ struct SettingsView: View {
                     Toggle(isOn: Binding(
                         get: { morningNudgeEnabled },
                         set: { newValue in
+                            if !appState.isPremium {
+                                showingPaywall = true
+                                return
+                            }
                             morningNudgeEnabled = newValue
                             Task {
                                 if newValue {
@@ -103,7 +106,14 @@ struct SettingsView: View {
                         }
                     )) {
                         VStack(alignment: .leading, spacing: 2) {
-                            Label("Morning Nudge", systemImage: "sunrise.fill")
+                            HStack {
+                                Label("Morning Nudge", systemImage: "sunrise.fill")
+                                if !appState.isPremium {
+                                    Image(systemName: "lock.fill")
+                                        .font(.caption)
+                                        .foregroundStyle(.orange)
+                                }
+                            }
                             Text("Daily motivation with yesterday's stats")
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
@@ -111,7 +121,7 @@ struct SettingsView: View {
                     }
                     .tint(.yellow)
 
-                    if morningNudgeEnabled {
+                    if morningNudgeEnabled && appState.isPremium {
                         DatePicker(
                             "Nudge Time",
                             selection: Binding(
@@ -160,7 +170,7 @@ struct SettingsView: View {
                 } header: {
                     Label("Today's Summary", systemImage: "chart.bar")
                 }
-                
+
                 // ── Locked Apps ──────────────────────────────────────────────────────
                 Section {
                     NavigationLink {
@@ -217,7 +227,6 @@ struct SettingsView: View {
                 } footer: {
                     Text("This resets today's tasks and scroll time. Your streak will not be affected.")
                 }
-
             }
             .navigationTitle("Settings")
             .navigationBarTitleDisplayMode(.large)
@@ -228,6 +237,9 @@ struct SettingsView: View {
                 Button("Cancel", role: .cancel) {}
             } message: {
                 Text("This will reset all tasks and scroll time earned today. Your streak will not be affected.")
+            }
+            .sheet(isPresented: $showingPaywall) {
+                PaywallView(appState: appState)
             }
         }
     }

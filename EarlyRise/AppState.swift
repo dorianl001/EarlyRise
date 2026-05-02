@@ -1,6 +1,7 @@
 import SwiftUI
 import ManagedSettings
 import SwiftData
+import StoreKit
 
 @Observable
 class AppState {
@@ -10,12 +11,18 @@ class AppState {
     var tasksCompletedToday: Int = 0
     var currentStreak: Int = 0
     var bestStreak: Int = 0
+    var isPremium: Bool = false
 
     private let calendar = Calendar.current
+    private let monthlyID = "com.dorianlopez.earlyrise.premium.monthly"
+    private let annualID = "com.dorianlopez.earlyrise.premium.annual"
 
     init() {
         loadStreakData()
         checkForMissedDay()
+        Task {
+            await restorePurchases()
+        }
     }
 
     var timeReclaimed: Int {
@@ -26,7 +33,27 @@ class AppState {
         tasks.count
     }
 
+    // MARK: - Subscription
+
+    func checkSubscriptionStatus() async {
+        for await result in Transaction.currentEntitlements {
+            if case .verified(let transaction) = result {
+                if transaction.productID == monthlyID || transaction.productID == annualID {
+                    await MainActor.run { isPremium = true }
+                    return
+                }
+            }
+        }
+        await MainActor.run { isPremium = false }
+    }
+
+    func restorePurchases() async {
+        try? await AppStore.sync()
+        await checkSubscriptionStatus()
+    }
+
     // MARK: - Complete Task
+
     func completeTask(_ task: EarnTask, context: ModelContext) {
         print("🔥 completeTask fired")
         if let index = tasks.firstIndex(where: { $0.id == task.id }) {
@@ -35,8 +62,7 @@ class AppState {
             tasksCompletedToday += 1
             updateStreak()
             scheduleUnlock(minutes: task.minutesEarned, taskName: task.name)
-            
-            // Save to SwiftData
+
             let completion = TaskCompletion(
                 taskName: task.name,
                 minutesEarned: task.minutesEarned
@@ -47,18 +73,17 @@ class AppState {
     }
 
     // MARK: - Schedule Unlock
+
     func scheduleUnlock(minutes: Int, taskName: String) {
         print("scheduleUnlock called — \(taskName), \(minutes) mins")
         let unlockExpiry = Date().addingTimeInterval(TimeInterval(minutes * 60))
         let sharedDefaults = UserDefaults(suiteName: "group.com.dorianlopez.earlyrise")
         sharedDefaults?.set(unlockExpiry, forKey: "unlockExpiry")
 
-        // Remove shields immediately
         let store = ManagedSettingsStore()
         store.shield.applicationCategories = nil
         store.shield.webDomainCategories = nil
-        
-        // Start Live Activity
+
         Task { @MainActor in
             LiveActivityManager.shared.startActivity(
                 taskName: taskName,
@@ -68,10 +93,10 @@ class AppState {
     }
 
     // MARK: - Streak Logic
+
     private func updateStreak() {
         let today = Date()
         let lastCompletedDate = UserDefaults.standard.object(forKey: "lastCompletedDate") as? Date
-
         if let lastDate = lastCompletedDate {
             if calendar.isDateInToday(lastDate) {
                 return
@@ -83,27 +108,21 @@ class AppState {
         } else {
             currentStreak = 1
         }
-
         if currentStreak > bestStreak {
             bestStreak = currentStreak
         }
-
         UserDefaults.standard.set(today, forKey: "lastCompletedDate")
         saveStreakData()
     }
 
-    // MARK: - Check for Missed Day on App Launch
     private func checkForMissedDay() {
-        guard let lastDate = UserDefaults.standard.object(forKey: "lastCompletedDate") as? Date else {
-            return
-        }
+        guard let lastDate = UserDefaults.standard.object(forKey: "lastCompletedDate") as? Date else { return }
         if !calendar.isDateInToday(lastDate) && !calendar.isDateInYesterday(lastDate) {
             currentStreak = 0
             saveStreakData()
         }
     }
 
-    // MARK: - Persist Streak Data
     private func saveStreakData() {
         UserDefaults.standard.set(currentStreak, forKey: "currentStreak")
         UserDefaults.standard.set(bestStreak, forKey: "bestStreak")
@@ -115,6 +134,7 @@ class AppState {
     }
 
     // MARK: - Reset Daily Tasks
+
     func resetDailyTasks() {
         for index in tasks.indices {
             tasks[index].isCompleted = false

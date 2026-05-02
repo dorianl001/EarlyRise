@@ -1,10 +1,12 @@
 import SwiftUI
 import SwiftData
+import StoreKit
 
 @main
 struct EarlyRiseApp: App {
     @AppStorage("hasCompletedOnboarding") var hasCompletedOnboarding: Bool = false
     @Environment(\.scenePhase) var scenePhase
+    @State private var appState = AppState()
 
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([TaskCompletion.self])
@@ -23,6 +25,7 @@ struct EarlyRiseApp: App {
                 .delegate = NotificationDelegate.shared
             if hasCompletedOnboarding {
                 ContentView()
+                    .environment(appState)
             } else {
                 OnboardingView()
             }
@@ -31,6 +34,7 @@ struct EarlyRiseApp: App {
         .onChange(of: scenePhase) { _, newPhase in
             if newPhase == .active {
                 ScreenTimeService.shared.checkAuthorization()
+                Task { await appState.checkSubscriptionStatus() }
             }
         }
     }

@@ -3,6 +3,7 @@ import StoreKit
 
 struct PaywallView: View {
     @Environment(\.dismiss) var dismiss
+    var appState: AppState
     @State private var products: [Product] = []
     @State private var isPurchasing = false
     @State private var errorMessage: String?
@@ -190,6 +191,7 @@ struct PaywallView: View {
             let result = try await product.purchase()
             switch result {
             case .success:
+                await appState.checkSubscriptionStatus()
                 dismiss()
             case .userCancelled:
                 break
@@ -209,6 +211,8 @@ struct PaywallView: View {
     func restorePurchases() async {
         do {
             try await AppStore.sync()
+            await appState.checkSubscriptionStatus()
+            dismiss()
         } catch {
             errorMessage = error.localizedDescription
             showError = true
@@ -217,5 +221,5 @@ struct PaywallView: View {
 }
 
 #Preview {
-    PaywallView()
+    PaywallView(appState: AppState())
 }
