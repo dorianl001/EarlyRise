@@ -5,9 +5,9 @@ struct StatsView: View {
     var appState: AppState
     @Query private var allCompletions: [TaskCompletion]
     @State private var selectedTab = 0
+    @State private var showingPaywall = false
     let tabs = ["Today", "Week", "Month", "Lifetime"]
 
-    // MARK: - Computed Stats
     var todayCompletions: [TaskCompletion] { TaskCompletion.filterToday(allCompletions) }
     var weekCompletions: [TaskCompletion] { TaskCompletion.filterThisWeek(allCompletions) }
     var monthCompletions: [TaskCompletion] { TaskCompletion.filterThisMonth(allCompletions) }
@@ -26,31 +26,64 @@ struct StatsView: View {
 
     var body: some View {
         NavigationStack {
-            ScrollView {
-                VStack(spacing: 24) {
+            if !appState.isPremium {
+                ScrollView {
+                    VStack(spacing: 24) {
+                        VStack(spacing: 16) {
+                            Image(systemName: "chart.bar.fill")
+                                .font(.system(size: 60))
+                                .foregroundStyle(.blue.opacity(0.3))
+                            Text("Advanced Stats")
+                                .font(.title2)
+                                .fontWeight(.bold)
+                            Text("Track your progress over time with weekly, monthly, and lifetime stats.")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                                .multilineTextAlignment(.center)
+                                .padding(.horizontal)
+                        }
+                        .padding(.top, 60)
 
-                    // ── Hero Metric ──────────────────────────────────
-                    heroMetric
-
-                    // ── Tab Selector ─────────────────────────────────
-                    tabSelector
-
-                    // ── Stats Cards ──────────────────────────────────
-                    statsCards
-
-                    // ── Streak Section ───────────────────────────────
-                    streakSection
-
+                        Button {
+                            showingPaywall = true
+                        } label: {
+                            HStack {
+                                Image(systemName: "crown.fill")
+                                Text("Unlock with Premium")
+                                    .fontWeight(.semibold)
+                            }
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(.blue)
+                            .foregroundStyle(.white)
+                            .clipShape(RoundedRectangle(cornerRadius: 16))
+                        }
+                        .padding(.horizontal)
+                    }
                 }
-                .padding()
+                .background(Color(.systemGroupedBackground))
+                .navigationTitle("Your Progress")
+                .navigationBarTitleDisplayMode(.large)
+                .sheet(isPresented: $showingPaywall) {
+                    PaywallView(appState: appState)
+                }
+            } else {
+                ScrollView {
+                    VStack(spacing: 24) {
+                        heroMetric
+                        tabSelector
+                        statsCards
+                        streakSection
+                    }
+                    .padding()
+                }
+                .background(Color(.systemGroupedBackground))
+                .navigationTitle("Your Progress")
+                .navigationBarTitleDisplayMode(.large)
             }
-            .background(Color(.systemGroupedBackground))
-            .navigationTitle("Your Progress")
-            .navigationBarTitleDisplayMode(.large)
         }
     }
 
-    // MARK: - Hero Metric
     var heroMetric: some View {
         VStack(spacing: 8) {
             Text("⏱️")
@@ -78,7 +111,6 @@ struct StatsView: View {
         }
     }
 
-    // MARK: - Tab Selector
     var tabSelector: some View {
         HStack(spacing: 0) {
             ForEach(tabs.indices, id: \.self) { index in
@@ -103,33 +135,12 @@ struct StatsView: View {
         .clipShape(RoundedRectangle(cornerRadius: 12))
     }
 
-    // MARK: - Stats Cards
     var statsCards: some View {
         LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
-            statCard(
-                icon: "checkmark.circle.fill",
-                value: "\(currentTaskCount)",
-                label: "Tasks Done",
-                color: .green
-            )
-            statCard(
-                icon: "clock.fill",
-                value: "\(currentMinutes) min",
-                label: "Scroll Earned",
-                color: .blue
-            )
-            statCard(
-                icon: "heart.fill",
-                value: formatTime(currentMinutes),
-                label: "Reclaimed",
-                color: .pink
-            )
-            statCard(
-                icon: "trophy.fill",
-                value: "\(appState.bestStreak) days",
-                label: "Best Streak",
-                color: .orange
-            )
+            statCard(icon: "checkmark.circle.fill", value: "\(currentTaskCount)", label: "Tasks Done", color: .green)
+            statCard(icon: "clock.fill", value: "\(currentMinutes) min", label: "Scroll Earned", color: .blue)
+            statCard(icon: "heart.fill", value: formatTime(currentMinutes), label: "Reclaimed", color: .pink)
+            statCard(icon: "trophy.fill", value: "\(appState.bestStreak) days", label: "Best Streak", color: .orange)
         }
     }
 
@@ -153,7 +164,6 @@ struct StatsView: View {
         .shadow(color: .black.opacity(0.05), radius: 8, y: 2)
     }
 
-    // MARK: - Streak Section
     var streakSection: some View {
         VStack(spacing: 16) {
             HStack {
@@ -189,7 +199,6 @@ struct StatsView: View {
         .shadow(color: .black.opacity(0.05), radius: 8, y: 2)
     }
 
-    // MARK: - Helper
     func formatTime(_ minutes: Int) -> String {
         if minutes < 60 {
             return "\(minutes)m"

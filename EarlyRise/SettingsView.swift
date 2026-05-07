@@ -56,14 +56,20 @@ struct SettingsView: View {
                         Slider(value: Binding(
                             get: { Double(dailyScrollBudget) },
                             set: { dailyScrollBudget = Int($0) }
-                        ), in: 10...120, step: 5)
+                        ), in: 10...Double(appState.isPremium ? 120 : 60), step: 5)
+                        .onChange(of: dailyScrollBudget) { _, newValue in
+                            if !appState.isPremium && newValue >= 60 {
+                                dailyScrollBudget = 60
+                                showingPaywall = true
+                            }
+                        }
                         .tint(.blue)
                         HStack {
                             Text("10 min")
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
                             Spacer()
-                            Text("2 hours")
+                            Text(appState.isPremium ? "2 hours" : "1 hour")
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
                         }
@@ -72,7 +78,7 @@ struct SettingsView: View {
                 } header: {
                     Label("Scroll Budget", systemImage: "clock.badge.checkmark")
                 } footer: {
-                    Text("Complete tasks to earn time beyond your daily budget.")
+                    Text(appState.isPremium ? "Complete tasks to earn time beyond your daily budget." : "Free users can set up to 60 min. Upgrade to Premium for up to 2 hours.")
                 }
 
                 // ── Notifications ────────────────────────────
@@ -174,7 +180,7 @@ struct SettingsView: View {
                 // ── Locked Apps ──────────────────────────────────────────────────────
                 Section {
                     NavigationLink {
-                        LockedAppsView()
+                        LockedAppsView(appState: appState)
                     } label: {
                         Label("Locked Apps", systemImage: "lock.shield.fill")
                     }

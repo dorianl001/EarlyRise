@@ -13,6 +13,20 @@ class AppState {
     var bestStreak: Int = 0
     var isPremium: Bool = false
 
+    var isTimeReclaimedAvailable: Bool {
+        if isPremium { return true }
+        let firstLaunch: Date
+        if let date = UserDefaults.standard.object(forKey: "firstLaunchDate") as? Date {
+            firstLaunch = date
+        } else {
+            let now = Date()
+            UserDefaults.standard.set(now, forKey: "firstLaunchDate")
+            firstLaunch = now
+        }
+        let days = Calendar.current.dateComponents([.day], from: firstLaunch, to: Date()).day ?? 0
+        return days < 3
+    }
+
     private let calendar = Calendar.current
     private let monthlyID = "com.dorianlopez.earlyrise.premium.monthly"
     private let annualID = "com.dorianlopez.earlyrise.premium.annual"

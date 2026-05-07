@@ -2,8 +2,12 @@ import SwiftUI
 import FamilyControls
 
 struct LockedAppsView: View {
+    var appState: AppState
     @State private var appSelection = AppSelectionManager.shared
     @State private var isPickerPresented = false
+    @State private var showingLimitAlert = false
+    @State private var showingPaywall = false
+    @State private var previousSelection = FamilyActivitySelection()
 
     var body: some View {
         NavigationStack {
@@ -40,7 +44,7 @@ struct LockedAppsView: View {
                 } header: {
                     Label("Monitored Apps", systemImage: "lock.shield.fill")
                 } footer: {
-                    Text("EarlyRise will show the pause screen when you open these apps after your scroll budget runs out.")
+                    Text(appState.isPremium ? "EarlyRise will show the pause screen when you open these apps after your scroll budget runs out." : "Free users can monitor up to 2 apps. Upgrade to Premium for unlimited.")
                 }
 
                 // MARK: - Add / Edit / Clear Buttons
@@ -71,10 +75,32 @@ struct LockedAppsView: View {
                 isPresented: $isPickerPresented,
                 selection: $appSelection.activitySelection
             )
+            .onChange(of: appSelection.activitySelection) { _, newValue in
+                if !appState.isPremium {
+                    let count = newValue.applications.count + newValue.categories.count
+                    if count > 2 {
+                        appSelection.activitySelection = previousSelection
+                        showingLimitAlert = true
+                    } else {
+                        previousSelection = newValue
+                    }
+                } else {
+                    previousSelection = newValue
+                }
+            }
+            .alert("Free Plan Limit", isPresented: $showingLimitAlert) {
+                Button("Upgrade to Premium") { showingPaywall = true }
+                Button("OK", role: .cancel) {}
+            } message: {
+                Text("Free users can monitor up to 2 apps. Upgrade to Premium to monitor unlimited apps.")
+            }
+            .sheet(isPresented: $showingPaywall) {
+                PaywallView(appState: appState)
+            }
         }
     }
 }
 
 #Preview {
-    LockedAppsView()
+    LockedAppsView(appState: AppState())
 }

@@ -1,9 +1,10 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State private var appState = AppState()
+    @Environment(AppState.self) var appState
     @State private var showingTasks = false
     @State private var selectedTab = 0
+    @State private var showingPaywall = false
 
     var body: some View {
         TabView(selection: $selectedTab) {
@@ -27,6 +28,9 @@ struct ContentView: View {
         }
         .sheet(isPresented: $showingTasks) {
             TaskListView(appState: appState)
+        }
+        .sheet(isPresented: $showingPaywall) {
+            PaywallView(appState: appState)
         }
     }
 
@@ -125,17 +129,36 @@ struct ContentView: View {
             ZStack(alignment: .topTrailing) {
                 statCard(
                     icon: "arrow.up.heart.fill",
-                    value: "\(appState.timeReclaimed) min",
+                    value: appState.isTimeReclaimedAvailable ? "\(appState.timeReclaimed) min" : "🔒",
                     label: "Time Reclaimed",
                     color: .pink
                 )
-                Button {
-                    shareTimeReclaimed()
-                } label: {
-                    Image(systemName: "square.and.arrow.up")
-                        .font(.caption)
-                        .foregroundStyle(.pink)
-                        .padding(8)
+                .overlay {
+                    if !appState.isTimeReclaimedAvailable {
+                        RoundedRectangle(cornerRadius: 16)
+                            .fill(.ultraThinMaterial)
+                        VStack(spacing: 4) {
+                            Image(systemName: "lock.fill")
+                                .foregroundStyle(.orange)
+                            Text("Premium")
+                                .font(.caption2)
+                                .fontWeight(.semibold)
+                                .foregroundStyle(.orange)
+                        }
+                        .onTapGesture {
+                            showingPaywall = true
+                        }
+                    }
+                }
+                if appState.isTimeReclaimedAvailable {
+                    Button {
+                        shareTimeReclaimed()
+                    } label: {
+                        Image(systemName: "square.and.arrow.up")
+                            .font(.caption)
+                            .foregroundStyle(.pink)
+                            .padding(8)
+                    }
                 }
             }
         }
@@ -180,36 +203,37 @@ struct ContentView: View {
         }
         .shadow(color: .blue.opacity(0.3), radius: 8, y: 4)
     }
-    
+
     // MARK: - Share
-        func shareTimeReclaimed() {
-            let hours = appState.timeReclaimed / 60
-            let minutes = appState.timeReclaimed % 60
-            
-            let timeString: String
-            if hours > 0 && minutes > 0 {
-                timeString = "\(hours)h \(minutes)m"
-            } else if hours > 0 {
-                timeString = "\(hours) hour\(hours == 1 ? "" : "s")"
-            } else {
-                timeString = "\(minutes) minute\(minutes == 1 ? "" : "s")"
-            }
-            
-            let message = "I just reclaimed \(timeString) of my time using EarlyRise — the app that makes you EARN your scroll time 🌅 #EarlyRise #EarnYourScroll"
-            
-            let activityVC = UIActivityViewController(
-                activityItems: [message],
-                applicationActivities: nil
-            )
-            
-            if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-               let window = windowScene.windows.first,
-               let rootVC = window.rootViewController {
-                rootVC.present(activityVC, animated: true)
-            }
+    func shareTimeReclaimed() {
+        let hours = appState.timeReclaimed / 60
+        let minutes = appState.timeReclaimed % 60
+
+        let timeString: String
+        if hours > 0 && minutes > 0 {
+            timeString = "\(hours)h \(minutes)m"
+        } else if hours > 0 {
+            timeString = "\(hours) hour\(hours == 1 ? "" : "s")"
+        } else {
+            timeString = "\(minutes) minute\(minutes == 1 ? "" : "s")"
         }
+
+        let message = "I just reclaimed \(timeString) of my time using EarlyRise — the app that makes you EARN your scroll time 🌅 #EarlyRise #EarnYourScroll"
+
+        let activityVC = UIActivityViewController(
+            activityItems: [message],
+            applicationActivities: nil
+        )
+
+        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+           let window = windowScene.windows.first,
+           let rootVC = window.rootViewController {
+            rootVC.present(activityVC, animated: true)
+        }
+    }
 }
 
 #Preview {
     ContentView()
+        .environment(AppState())
 }
